@@ -20,7 +20,9 @@ class _OneDayScreenState extends State<OneDayScreen> {
             margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
             height: 70,
             color: Colors.amberAccent,
-            child: ListDaysOfWeek(),
+            child: ListDaysOfWeek(
+              daysOfWeek: daysOfWeek,
+            ),
           ),
         ],
       ),
