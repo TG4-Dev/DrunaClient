@@ -6,9 +6,22 @@ final darkTheme = ThemeData(
     brightness: Brightness.dark,
   ),
   textTheme: TextTheme(
-    bodyMedium: const TextStyle(
+    bodyLarge: TextStyle(
       color: Colors.white,
-      fontSize: 20
+      fontSize: 32.0,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'RobotoMono',
+    ),
+    bodyMedium: TextStyle(
+      color: Colors.white,
+      fontSize: 16.0,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'RobotoMono',
+    ),
+    labelSmall: TextStyle(
+      color: Colors.grey,
+      fontSize: 14,
+      fontFamily: 'RobotoMono',
     )
   ),
 );
