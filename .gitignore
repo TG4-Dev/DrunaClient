@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.opencode
+
+# Local release configuration (copy from production.example.json)
+/config/production.json

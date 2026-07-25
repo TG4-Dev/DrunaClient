@@ -1,30 +1,56 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:dio/dio.dart';
+import 'package:druna_app/app/druna_app.dart';
+import 'package:druna_app/core/api/api_client.dart';
+import 'package:druna_app/core/config/app_config.dart';
+import 'package:druna_app/core/storage/token_store.dart';
+import 'package:druna_app/repositories/druna_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:druna_app/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('shows the welcome screen when there is no saved session', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Найдём время\nдля встречи'), findsOneWidget);
+    expect(find.text('Войти'), findsOneWidget);
+    expect(find.text('Создать аккаунт'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('sign-up validates the minimum password length', (tester) async {
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Создать аккаунт'));
+    await tester.pumpAndSettle();
+    final fields = find.byType(EditableText);
+    await tester.enterText(fields.at(0), 'Алиса');
+    await tester.enterText(fields.at(1), 'alice@example.com');
+    await tester.enterText(fields.at(2), 'alice');
+    await tester.enterText(fields.at(3), 'short');
+    await tester.tap(find.widgetWithText(FilledButton, 'Создать профиль'));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(
+      find.text('Пароль должен быть не короче 8 символов'),
+      findsOneWidget,
+    );
   });
+}
+
+DrunaApp _testApp() {
+  final store = MemoryTokenStore();
+  final repository = DrunaRepository(
+    ApiClient(baseUrl: 'https://example.test', tokenStore: store, dio: Dio()),
+  );
+  return DrunaApp(
+    repository: repository,
+    tokenStore: store,
+    config: const AppConfig(
+      apiBaseUrl: 'https://example.test',
+      environment: 'test',
+    ),
+  );
 }

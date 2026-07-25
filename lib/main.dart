@@ -1,26 +1,21 @@
-import 'package:druna_app/features/one_day/one_day.dart';
-import 'package:druna_app/features/one_week/view/view.dart';
-import 'package:druna_app/theme/theme.dart';
+import 'package:druna_app/app/druna_app.dart';
+import 'package:druna_app/core/api/api_client.dart';
+import 'package:druna_app/core/config/app_config.dart';
+import 'package:druna_app/core/storage/token_store.dart';
+import 'package:druna_app/repositories/druna_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  initializeDateFormatting('ru_RU', null);
-  runApp(const MyApp());
-}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ru_RU');
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const config = AppConfig.fromEnvironment();
+  final tokenStore = SecureTokenStore();
+  final api = ApiClient(baseUrl: config.apiBaseUrl, tokenStore: tokenStore);
+  final repository = DrunaRepository(api);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: darkTheme,
-      routes: {
-        '/day': (context) => OneDayScreen(),
-        '/': (context) => OneWeekScreen(),  //открывается по дефолту
-        },
-    );
-  }
+  runApp(
+    DrunaApp(repository: repository, tokenStore: tokenStore, config: config),
+  );
 }
